@@ -11,16 +11,12 @@ from nltk import pos_tag
 nltk.download('punkt')
 nlp = spacy.load('fr')
 french_lemmatizer = LefffLemmatizer()
-nlp.add_pipe(french_lemmatizer, name='lefff',before='ner')
+nlp.add_pipe(french_lemmatizer, name='lefff', before='ner')
 
 
 def main():
     with open('assets/zola-assommoir.txt', 'r') as content_file:
         content = content_file.read()
-        # tokens = word_tokenize(content)
-        # tokens = [w.lower() for w in tokens]
-        #p_tag = pos_tag(tokens)
-
         chapters = content.split('\n\n')
 
         persons = []
@@ -28,30 +24,50 @@ def main():
         locations = []
 
         for chapter in chapters:
+            chapter_sanitized = sanitize_chapter(chapter)
 
-            chapter = chapter.replace('\n', ' ')
-
-            # print(lemmes)
-            doc = nlp(u'%s'%chapter)
+            doc = nlp(u'%s' % chapter_sanitized)
 
             for entity in doc.ents:
-                # Get only persons
                 if entity.label_ == 'PER':
+                    # Get only persons
                     persons.append(entity.text)
-
-                # Get only locations
-                if entity.label_ == 'LOC':
+                elif entity.label_ == 'LOC':
+                    # Get only locations
                     locations.append(entity.text)
-
-                # Get only organisation
-                if entity.label_ == 'ORG':
+                elif entity.label_ == 'ORG':
+                    # Get only organisation
                     organisations.append(entity.text)
-                # print(entity.text, entity.label_)
 
-        uniq_organisations = list(sorted(set(organisations)))
-        uniq_locations = list(sorted(set(locations)))
-        uniq_persons = list(sorted(set(persons)))
-        print(uniq_organisations)
+        print_header('organisations')
+        print(uniq(organisations))
+
+        print_header('locations')
+        print(uniq(locations))
+
+        print_header('persons')
+        print(uniq(persons))
+
+
+def sanitize_chapter(chapter):
+    """Remove some bad sring who don't want on """
+    # clean chapter
+    chapter = chapter.replace('\n', ' ')
+    chapter = chapter.replace('_', '')
+    return chapter
+
+
+def uniq(array):
+    """Remove duplicates entries from array"""
+    return list(sorted(set(array)))
+
+
+def print_header(title):
+    """Print a beautifull header"""
+    print("")
+    print(title)
+    print('=' * 80)
+
 
 if __name__ == '__main__':
     main()
