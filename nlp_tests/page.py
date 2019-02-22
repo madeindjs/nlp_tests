@@ -10,16 +10,12 @@ from termcolor import colored, cprint
 import spacy
 import pprint
 
-# import nltk
-# from nltk.tokenize import word_tokenize
-# from nltk import pos_tag
-
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
 
 ####### CONSTANTE ##############
-# nltk.download('punkt')
-# nlp = spacy.load('fr')
-# french_lemmatizer = LefffLemmatizer()
-# nlp.add_pipe(french_lemmatizer, name='lefff')
+nltk.download('punkt')
 
 
 class Page(object):
@@ -34,6 +30,7 @@ class Page(object):
         self.soup, self.code = self._get_soup()
         self._get_links()
         self._get_text()
+        self._get_lang()
 
         if self.code == 200:
             cprint(self.url, 'green')
@@ -97,16 +94,25 @@ class Page(object):
         self.text = " ".join(p_text)
         self.remarkable = div_text
 
+    def _get_lang(self):
+        """get Lang of the page according to `<html lang='en' >` attribute"""
+        self.lang = self.soup.find('html')['lang']
+        self.nlp = spacy.load(self.lang)
+
+        if self.lang == 'fr':
+            french_lemmatizer = LefffLemmatizer()
+            nlp.add_pipe(french_lemmatizer, name='lefff')
+
     def get_lemmes(self):
         tokens = word_tokenize(self.text)
         tokens = [w.lower() for w in tokens]
         #p_tag = pos_tag(tokens)
 
         # print(lemmes)
-        doc = nlp(self.text)
+        doc = self.nlp(self.text)
 
-        for d in doc:
-            print(d.text, d.pos_, d.tag_, d.lemma_)
+        # for d in doc:
+        #     print(d.text, d.pos_, d.tag_, d.lemma_)
 
         for entity in doc.ents:
             print(entity.text, entity.label_)

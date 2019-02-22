@@ -23,6 +23,6 @@ if __name__ == '__main__':
     args = parse_args()
     site = Site(args.website_url, limit=args.limit)
     for page in site.crawl():
-        print(page.text)
+        page.get_lemmes()
     # page = site.factory_page(args.website_url)
     # page.get_lemmes()
