@@ -46,7 +46,7 @@ class Page(object):
             cprint("something went wrong. HTTP Code: {}".format(r.status_code), 'red')
 
     def get_links(self):
-        '''get all links of the page (if mode internal=> only internal links)'''
+        """get all links of the page (if mode internal=> only internal links)"""
         if self.code == 200:
             links = [l.get("href") for l in self.soup.find_all(
                 "a") if l.get("href") != "#"]  # --->
@@ -54,7 +54,7 @@ class Page(object):
             intab_links = [self.site_url +
                            l for l in links if l.startswith("/")]
             intre_links = [
-                self.url + "/" + l for l in links if re.match(r"^(?!(http|/|#\w|mailto))", l)]
+                self.url + l for l in links if re.match(r"^(?!(http|/|#\w|mailto))", l)]
             # print(intre_links)
             intex_links = [l for l in links if re.match(
                 r"https?://{%s}.*" % self.root_url, l)]

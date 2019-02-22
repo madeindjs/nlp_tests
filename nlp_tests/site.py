@@ -5,9 +5,10 @@ from .page import Page
 class Site(object):
     """dans site: mot clef, urls interne, url externe, nom de domaine, document_matrix"""
 
-    def __init__(self, url):
+    def __init__(self, url, limit = 300):
         self.root_url = urlparse(url).netloc
         self.entry_point = url
+        self.limit = int(limit)
         self.site_url = urlparse(url).scheme + "://" + self.root_url
         self.home_page = self.factory_page(url)
 
@@ -20,11 +21,14 @@ class Site(object):
         pile = self.home_page.internal_links.copy()
         parsed = self.home_page.internal_links.copy()
 
-        while pile != []:
-            # print("taille de la pile", len(pile),
-            #       "taille de la liste", len(parsed))
-            a = self.factory_page(pile[0])
+        count = 0
 
+
+
+        while pile != [] and count != self.limit:
+            # Loop during pages exists or limit reached
+            count += 1
+            a = self.factory_page(pile[0])
             a.get_links()
 
             if a.code == 200:
