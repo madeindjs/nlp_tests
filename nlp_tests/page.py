@@ -7,6 +7,8 @@ from spacy_lefff import LefffLemmatizer, POSTagger
 import sys
 from termcolor import colored, cprint
 
+from .entity import Entity
+
 import spacy
 import pprint
 
@@ -22,6 +24,7 @@ class Page(object):
     """dans page: url, page_parent, nom de domaine, urls internes, url externes, mot_clef,"""
 
     EXTENSION_BLACKLIST = ('.png', '.jpg', '.gif', '.pdf', '.js', '.css')
+    VALID_ENTITY_TYPES = ('ORG', 'PERSON')
 
     def __init__(self, url, root_url, site_url):
         self.url = url
@@ -52,12 +55,11 @@ class Page(object):
         if self.code == 200:
             links = []
 
-            for link in self.soup.find_all( "a", href=True) :
-                href= link.get("href")
+            for link in self.soup.find_all("a", href=True):
+                href = link.get("href")
 
                 if href != "#" and not href.endswith(self.EXTENSION_BLACKLIST):
                     links.append(href)
-
 
             intab_links = [self.site_url
                            + l for l in links if l.startswith("/")]
@@ -96,12 +98,13 @@ class Page(object):
 
     def _get_lang(self):
         """get Lang of the page according to `<html lang='en' >` attribute"""
-        self.lang = self.soup.find('html')['lang']
+        self.lang = self.soup.find('html')['lang'][:2]
+
         self.nlp = spacy.load(self.lang)
 
         if self.lang == 'fr':
             french_lemmatizer = LefffLemmatizer()
-            nlp.add_pipe(french_lemmatizer, name='lefff')
+            self.nlp.add_pipe(french_lemmatizer, name='lefff')
 
     def get_lemmes(self):
         tokens = word_tokenize(self.text)
@@ -115,4 +118,5 @@ class Page(object):
         #     print(d.text, d.pos_, d.tag_, d.lemma_)
 
         for entity in doc.ents:
-            print(entity.text, entity.label_)
+            if entity.label_ in self.VALID_ENTITY_TYPES:
+                print(Entity(entity))
