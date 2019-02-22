@@ -29,14 +29,16 @@ class Page(object):
         self.url = url
         self.site_url = site_url
         self.root_url = root_url
-        self.soup, self.code = self.get_soup()
+        self.soup, self.code = self._get_soup()
+        self._get_links()
+        self._get_text()
 
         if self.code == 200:
             cprint(self.url, 'green')
         else:
             cprint(self.url, 'red')
 
-    def get_soup(self):
+    def _get_soup(self):
         try:
             r = requests.get(self.url)
             s = BeautifulSoup(r.text, 'lxml')
@@ -45,7 +47,7 @@ class Page(object):
         except:
             cprint("something went wrong. HTTP Code: {}".format(r.status_code), 'red')
 
-    def get_links(self):
+    def _get_links(self):
         """get all links of the page (if mode internal=> only internal links)"""
         if self.code == 200:
             links = [l.get("href") for l in self.soup.find_all(
@@ -68,7 +70,7 @@ class Page(object):
         else:
             self.internal_links = []
 
-    def get_text(self):
+    def _get_text(self):
         """récupère le contenu de la page"""
         div_tags = ["h{}".format(i) for i in range(1, 6)]
 

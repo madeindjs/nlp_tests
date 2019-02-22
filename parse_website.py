@@ -22,7 +22,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     site = Site(args.website_url, limit=args.limit)
-    site.scrap_site()
+    for page in site.crawl():
+        print(page.text)
     # page = site.factory_page(args.website_url)
-    # page.get_text()
     # page.get_lemmes()

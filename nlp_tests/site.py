@@ -16,24 +16,21 @@ class Site(object):
     def factory_page(self, page_url):
         return Page(page_url, self.root_url, self.site_url)
 
-    def scrap_site(self):
-        self.home_page.get_links()
+    def crawl(self):
         pile = self.home_page.internal_links.copy()
         parsed = self.home_page.internal_links.copy()
 
         count = 0
 
-
-
         while pile != [] and count != self.limit:
             # Loop during pages exists or limit reached
             count += 1
-            a = self.factory_page(pile[0])
-            a.get_links()
+            page = self.factory_page(pile[0])
 
-            if a.code == 200:
-                new_links = set(a.internal_links) - set(parsed)
+            if page.code == 200:
+                new_links = set(page.internal_links) - set(parsed)
                 pile.extend(new_links)
                 parsed.extend(new_links)
+                yield page
 
             pile.pop(0)
