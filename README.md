@@ -4,7 +4,19 @@
 
 ### `parse_website.py`
 
-TODO
+~~~
+$ python3 parse_website.py --help
+usage: parse_website.py [-h] [--limit LIMIT_PAGES] website_url
+
+Crawl website and extract usefull data.
+
+positional arguments:
+  website_url          an integer for the accumulator
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --limit LIMIT_PAGES  Max number of page to scrape
+~~~
 
 ### `parse_book.py`
 

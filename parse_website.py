@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from spacy_lefff import LefffLemmatizer, POSTagger
 
+import argparse
+
 import spacy
 import pprint
 
@@ -127,16 +129,22 @@ class Page(object):
         for entity in doc.ents:
             print(entity.text, entity.label_)
 
-# apply this to all n top resuslts
-def main():
-    site = Site("http://rousseau-alexandre.fr")
-    # site.scrap_site()
 
-    page = site.factory_page("http://rousseau-alexandre.fr")
-    # page.get_links()
-    page.get_text()
-    page.get_lemmes()
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Crawl website and extract usefull data.')
+    parser.add_argument('website_url', type=str,
+                        help='an integer for the accumulator')
+    parser.add_argument('--limit', dest='limit_pages', default=300,
+                        help='Max number of page to scrape')
+
+    return parser.parse_args()
+
 
 
 if __name__ == '__main__':
-    main()
+    args = parse_args()
+    site = Site(args.website_url)
+    page = site.factory_page(args.website_url)
+    page.get_text()
+    page.get_lemmes()
