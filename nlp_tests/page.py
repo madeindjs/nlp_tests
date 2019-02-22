@@ -10,9 +10,9 @@ from termcolor import colored, cprint
 import spacy
 import pprint
 
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk import pos_tag
+# import nltk
+# from nltk.tokenize import word_tokenize
+# from nltk import pos_tag
 
 
 ####### CONSTANTE ##############
@@ -24,6 +24,8 @@ from nltk import pos_tag
 
 class Page(object):
     """dans page: url, page_parent, nom de domaine, urls internes, url externes, mot_clef,"""
+
+    EXTENSION_BLACKLIST = ('.png', '.jpg', '.gif', '.pdf', '.js', '.css')
 
     def __init__(self, url, root_url, site_url):
         self.url = url
@@ -45,16 +47,24 @@ class Page(object):
             # print("code de la requête", r.status_code, " page: ", s.title)
             return s, r.status_code
         except:
-            cprint("something went wrong. HTTP Code: {}".format(r.status_code), 'red')
+            cprint("something went wrong. HTTP Code: {}".format(
+                r.status_code), 'red')
 
     def _get_links(self):
         """get all links of the page (if mode internal=> only internal links)"""
         if self.code == 200:
-            links = [l.get("href") for l in self.soup.find_all(
-                "a") if l.get("href") != "#"]  # --->
+            links = []
 
-            intab_links = [self.site_url +
-                           l for l in links if l.startswith("/")]
+            for link in self.soup.find_all( "a", href=True) :
+                href= link.get("href")
+
+                if href != "#" and not href.endswith(self.EXTENSION_BLACKLIST):
+                    links.append(href)
+
+
+            intab_links = [self.site_url
+                           + l for l in links if l.startswith("/")]
+
             intre_links = [
                 self.url + l for l in links if re.match(r"^(?!(http|/|#\w|mailto))", l)]
             # print(intre_links)
