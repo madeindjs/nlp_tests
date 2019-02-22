@@ -1,6 +1,11 @@
 import argparse
+import logging
 
 from nlp_tests.site import Site
+
+# disable log messages from the Requests library
+urllib3_logger = logging.getLogger('urllib3')
+urllib3_logger.setLevel(logging.CRITICAL)
 
 
 def parse_args():
@@ -17,6 +22,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     site = Site(args.website_url)
-    page = site.factory_page(args.website_url)
-    page.get_text()
-    page.get_lemmes()
+    site.scrap_site()
+    # page = site.factory_page(args.website_url)
+    # page.get_text()
+    # page.get_lemmes()

@@ -4,7 +4,8 @@ import requests
 
 from spacy_lefff import LefffLemmatizer, POSTagger
 
-
+import sys
+from termcolor import colored, cprint
 
 import spacy
 import pprint
@@ -15,10 +16,10 @@ from nltk import pos_tag
 
 
 ####### CONSTANTE ##############
-nltk.download('punkt')
-nlp = spacy.load('fr')
-french_lemmatizer = LefffLemmatizer()
-nlp.add_pipe(french_lemmatizer, name='lefff')
+# nltk.download('punkt')
+# nlp = spacy.load('fr')
+# french_lemmatizer = LefffLemmatizer()
+# nlp.add_pipe(french_lemmatizer, name='lefff')
 
 
 class Page(object):
@@ -28,15 +29,16 @@ class Page(object):
         self.url = url
         self.site_url = site_url
         self.root_url = root_url
-        #print("scraping:{} ".format(self.url))
+        cprint(self.url, 'green')
+        # print("scraping:{} ".format(self.url))
         self.soup, self.code = self.get_soup()
-        print("scraping:[code: {}] {} ".format(self.code, url))
+        # print("scraping:[code: {}] {} ".format(self.code, url))
 
     def get_soup(self):
         try:
             r = requests.get(self.url)
             s = BeautifulSoup(r.text, 'lxml')
-            print("code de la requête", r.status_code, " page: ", s.title)
+            # print("code de la requête", r.status_code, " page: ", s.title)
             return s, r.status_code
         except:
             print("something went wrong. HTTP request code: {}".format(r.status_code))
@@ -51,7 +53,7 @@ class Page(object):
                            l for l in links if l.startswith("/")]
             intre_links = [
                 self.url + "/" + l for l in links if re.match(r"^(?!(http|/|#\w|mailto))", l)]
-            print(intre_links)
+            # print(intre_links)
             intex_links = [l for l in links if re.match(
                 r"https?://{%s}.*" % self.root_url, l)]
             ext_links = [l for l in links if re.match(
