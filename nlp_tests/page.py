@@ -29,10 +29,12 @@ class Page(object):
         self.url = url
         self.site_url = site_url
         self.root_url = root_url
-        cprint(self.url, 'green')
-        # print("scraping:{} ".format(self.url))
         self.soup, self.code = self.get_soup()
-        # print("scraping:[code: {}] {} ".format(self.code, url))
+
+        if self.code == 200:
+            cprint(self.url, 'green')
+        else:
+            cprint(self.url, 'red')
 
     def get_soup(self):
         try:
@@ -41,7 +43,7 @@ class Page(object):
             # print("code de la requête", r.status_code, " page: ", s.title)
             return s, r.status_code
         except:
-            print("something went wrong. HTTP request code: {}".format(r.status_code))
+            cprint("something went wrong. HTTP Code: {}".format(r.status_code), 'red')
 
     def get_links(self):
         '''get all links of the page (if mode internal=> only internal links)'''

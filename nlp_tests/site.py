@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from .page import Page 
+from .page import Page
 
 class Site(object):
     """dans site: mot clef, urls interne, url externe, nom de domaine, document_matrix"""
@@ -16,14 +16,13 @@ class Site(object):
         return Page(page_url, self.root_url, self.site_url)
 
     def scrap_site(self):
-        print(" =================>{}<====================".format(self.site_url))
         self.home_page.get_links()
         pile = self.home_page.internal_links.copy()
         parsed = self.home_page.internal_links.copy()
 
         while pile != []:
-            print("taille de la pile", len(pile),
-                  "taille de la liste", len(parsed))
+            # print("taille de la pile", len(pile),
+            #       "taille de la liste", len(parsed))
             a = self.factory_page(pile[0])
 
             a.get_links()
